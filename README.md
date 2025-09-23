@@ -1,7 +1,27 @@
 # letterboxd_to_radarr
-A small script for quickly importing movies from Letterboxd to Radarr. 
+A small script for quickly importing movies from **Letterboxd** to **Radarr**. 
+
+## Requirements
+Install dependencies with:
+```bash
+pip install beautifulsoup4 requests
+```
 
 ## Usage:
-Simply pip install bs4 and requests, then run the script like this example:
+### Import movies by user and rating
+```bash
 python3 movies_by_user_and_rating.py <username> <min_rating> <max_rating>
+```
+Example:
+```bash
+python3 movies_by_user_and_rating.py someuser 3 5
+```
+
+### Import movies from a user's watchlist
+```bash
 python3 watchlist_by_user.py <username>
+```
+Example:
+```bash
+python3 watchlist_by_user.py filmtonsen
+```
