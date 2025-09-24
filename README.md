@@ -1,5 +1,5 @@
 # letterboxd_to_radarr
-A small script for quickly importing movies from **Letterboxd** to **Radarr**.
+A small script for quickly importing movies from **Letterboxd** to **Radarr**. It works by creating folders with the movie name so that **Radarr** automatically can import them through "Library Import". 
 
 ## Requirements
 Install dependencies with:
