@@ -5,11 +5,9 @@ import requests
 import os
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print("Usage: python3 movies_by_user_and_rating.py <username> <min_rating> <max_rating>")
+    if len(sys.argv) < 4:
+        print("Usage: python3 movies_by_user_and_rating.py <username> <min_rating> <max_rating> [<out_path>] [--direct]")
         sys.exit(1)
-    else:
-        print("Usage: python3 movies_by_user_and_rating.py <username> <min_rating> <max_rating>")
 
     # block avoidance
     session = requests.Session()
@@ -23,6 +21,14 @@ if __name__ == "__main__":
     min_rating = sys.argv[2]
     max_rating = sys.argv[3]
 
+    # more settings
+    out_path = os.getcwd()
+    direct = False          # --direct makes the script create the movie folders directly in the selected path
+    if len(sys.argv) >= 5 and sys.argv[4] != "--direct":
+        out_path = sys.argv[4]
+    if "--direct" in sys.argv[4:]:
+        direct = True
+
     rating = f"{min_rating}-{max_rating}"
     url = f'https://letterboxd.com/{user}/films/rated/{rating}/'
 
@@ -33,19 +39,31 @@ if __name__ == "__main__":
     for page in range(pages):
         page_url = f'{url}/page/{page+1}/'
         page_doc = BeautifulSoup(session.get(page_url).text, 'html.parser')
-        print(page_doc)
         items = page_doc.find(class_="grid -p70").find_all(class_="griditem")
         movies += [item.div["data-item-full-display-name"] for item in items]
 
-    try:
-        os.mkdir(f'added_movies_by_{user}')
-    except FileExistsError:
-        print("User Folder already exists") 
+    if direct:
+        base_dir = out_path
+    else:
+        base_dir = os.path.join(out_path, f'added_movies_by_{user}')
+        try:
+            os.mkdir(base_dir)
+        except FileExistsError:
+            print("User Folder already exists") 
+
+    created = 0
+    skipped = 0
 
     for movie in movies:
         try:
-            os.mkdir(f'added_movies_by_{user}/{movie.replace(":", "")}')
+            os.mkdir(os.path.join(base_dir, movie.replace(":", "")))
+            created += 1
         except FileExistsError:
             print("Directory already exists")
-
+            skipped += 1
+            
+    # final status
+    print(f"\nDone. Found {len(movies)} movies in total.")
+    print(f"Created {created} new folders, skipped {skipped} (already existed).")
+    print(f"Output path: {base_dir}")
 
